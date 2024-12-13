@@ -25,7 +25,7 @@ jobs:
       - name: Build and tag Docker images
         run: |
           docker-compose build
-          docker tag laravel-app:latest yourusername/laravel-app:latest
+          docker tag laravel-app:latest ghizlanera/laravel-app:latest
 
       # Push the Laravel app image to Docker Hub
       - name: Push Laravel app image
