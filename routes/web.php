@@ -151,17 +151,23 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // //pour l'envoi de la demande de convention de stage
 // Route::post('/convention',[ConventionController::class,'ConventionPost'])->name('convention');
 
-
+//DEMANDE ACTE DE NAISSANCE
 Route::get('/demande', [DemanderController::class, 'demande'])->name('demande');
 Route::post('/demande', [DemanderController::class, 'store'])->name('demande.store');
 Route::get('/get-cities/{regionId}', [DemanderController::class, 'getCities']);
 Route::get('/get-communes/{cityId}', [DemanderController::class, 'getCommunes']);
 Route::get('/get-bureaux/{cityId}', [DemanderController::class, 'getBureaux']);
 Route::get('/demande/create', [DemanderController::class, 'create'])->name('demande.create');
+
+//DEMANDE ACTE DE DECES
 Route::get('/deces',[decesController::class,'deces'])->name('deces');
 //pour l'envoi de la demande des documents
-Route::post('/deces',[decesController::class,'demandePost'])->name('deces');
+Route::post('/deces', [decesController::class, 'store'])->name('deces.store');
+Route::get('/get-cities/{regionId}', [decesController::class, 'getCities']);
+Route::get('/get-communes/{cityId}', [decesController::class, 'getCommunes']);
+Route::get('/get-bureaux/{cityId}', [decesController::class, 'getBureaux']);
 
+//DEMANDE ACTE DE RESIDENCE
 Route::get('/residence',[residenceController::class,'residence'])->name('residence');
 //pour l'envoi de la demande des documents
 Route::post('/residence',[residenceController::class,'demandePost'])->name('residence');

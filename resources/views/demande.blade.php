@@ -125,7 +125,7 @@
             <div class="col-md-12">
                 <!-- Step 1: Administrative Details -->
                 <div id="step-1" class="form-section form-container">
-                    <h2 class="text-center mb-4">طلب وثيقة</h2>
+                    <h2 class="text-center mb-4">طلب عقد الازدياد</h2>
                     <form action="{{ route('demande.store') }}" method="POST">
                         @csrf
                     

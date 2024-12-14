@@ -11,9 +11,23 @@
 <div class="container mt-5">
     <div class="form-container p-4">
         <h2 class="text-center mb-4">طلب شهادة الوفاة</h2>
-        <form action="#" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('deces.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            
+                        @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                    
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
             <!-- معلومات الإدارة -->
             <h3 class="text-primary mb-4">الإدارة</h3>
             
@@ -35,42 +49,18 @@
                     <option value="12">جهة الشرق</option>
                 </select>
             </div>
-
+        
             <!-- Select City -->
             <div class="mb-3">
-                <label for="city" class="form-label">المدينة أو الإقليم</label>
-                <select id="city" class="form-select" name="city" required>
-                    <option value="">اختر المدينة أو الإقليم</option>
-                    <option value="طنجة">طنجة</option>
-                    <option value="تطوان">تطوان</option>
-                    <option value="فاس">فاس</option>
-                    <option value="مكناس">مكناس</option>
-                    <option value="الرباط">الرباط</option>
-                    <option value="سلا">سلا</option>
-                </select>
+                <label class="form-label">المدينة أو الإقليم</label>
+                <input type="text" class="form-control" name="city" required>
             </div>
-
+        
             <!-- Select Commune -->
             <div class="mb-3">
-                <label for="commune" class="form-label">الجماعة</label>
-                <select id="commune" class="form-select" name="commune" required>
-                    <option value="">اختر الجماعة</option>
-                    <option value="بني مكادة">بني مكادة</option>
-                    <option value="مغوغة">مغوغة</option>
-                    <option value="السواني">السواني</option>
-                </select>
-            </div>
-
-            <!-- Select Bureau d'état civil -->
-            <div class="mb-3">
-                <label for="bureau" class="form-label">مكتب الحالة المدنية</label>
-                <select id="bureau" class="form-select" name="bureau" required>
-                    <option value="">اختر مكتب الحالة المدنية</option>
-                    <option value="مكتب 1">مكتب 1</option>
-                    <option value="مكتب 2">مكتب 2</option>
-                    <option value="مكتب 3">مكتب 3</option>
-                </select>
-            </div>
+                <label class="form-label">الجماعة</label>
+                <input type="text" class="form-control" name="commune" required>
+            </div>         
 
             <!-- معلومات مقدم الطلب -->
             <h3 class="text-primary mb-4">معلومات مقدم الطلب</h3>
@@ -221,47 +211,134 @@
     </div>
 </div>
 <script>
-    const citiesByRegion = {
-        1: ["طنجة", "تطوان", "الحسيمة", "شفشاون"],
-        2: ["فاس", "مكناس", "إفران", "الحاجب"],
-        3: ["الرباط", "سلا", "القنيطرة", "تمارة"],
-        4: ["الدار البيضاء", "الجديدة", "سطات", "برشيد"],
-        5: ["مراكش", "آسفي", "الصويرة", "شيشاوة"],
-        6: ["بني ملال", "خنيفرة", "الفقيه بن صالح", "أزيلال"],
-        7: ["أكادير", "تارودانت", "تزنيت", "إنزكان"],
-        8: ["كلميم", "طانطان", "سيدي إفني"],
-        9: ["العيون", "بوجدور", "طرفاية"],
-        10: ["الداخلة", "أوسرد"],
-        11: ["الرشيدية", "ورزازات", "زاكورة"],
-        12: ["وجدة", "الناظور", "بركان"]
-    };
-
-    const communesByCity = {
-        "طنجة": ["بني مكادة", "مغوغة", "السواني"],
-        "تطوان": ["تطوان المدينة", "مرتيل", "السمارة"],
-        "الحسيمة": ["بني بوفراح", "بني حذيفة", "الرواضي"],
-        "فاس": ["فاس المدينة", "سايس", "زواغة"],
-        "الرباط": ["يعقوب المنصور", "أكدال الرياض", "السويسي"],
-        "الدار البيضاء": ["أنفا", "الفداء مرس السلطان", "عين الشق"],
-        "مراكش": ["المدينة", "النخيل", "جيليز"],
-        "العيون": ["المدينة القديمة", "المسيرة", "الإبداع"]
-    };
-
     document.getElementById('region').addEventListener('change', function () {
-        const regionId = this.value;
-        const cities = citiesByRegion[regionId] || [];
-        const citySelect = document.getElementById('city');
-        citySelect.innerHTML = '<option value="">اختر المدينة أو الإقليم</option>';
-        cities.forEach(city => citySelect.innerHTML += <option value="${city}">${city}</option>);
-    });
+    let regionId = this.value;
+    let citySelect = document.getElementById('city');
+    let communeSelect = document.getElementById('commune');
+    let bureauSelect = document.getElementById('bureau');
 
-    document.getElementById('city').addEventListener('change', function () {
-        const cityName = this.value;
-        const communes = communesByCity[cityName] || [];
-        const communeSelect = document.getElementById('commune');
-        communeSelect.innerHTML = '<option value="">اختر الجماعة</option>';
-        communes.forEach(commune => communeSelect.innerHTML += <option value="${commune}">${commune}</option>);
-    });
+    // Réinitialisation des options
+    citySelect.innerHTML = '<option value="">اختر المدينة أو الإقليم</option>';
+    communeSelect.innerHTML = '<option value="">اختر الجماعة</option>';
+    bureauSelect.innerHTML = '<option value="">اختر مكتب الحالة المدنية</option>';
+
+    if (regionId) {
+        // Faites un appel AJAX pour récupérer les villes
+        fetch(`/get-cities/${regionId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.cities.forEach(city => {
+                    citySelect.innerHTML += `<option value="${city.id}">${city.name}</option>`;
+                });
+            });
+    }
+});
+
+document.getElementById('city').addEventListener('change', function () {
+    let cityId = this.value;
+    let communeSelect = document.getElementById('commune');
+    let bureauSelect = document.getElementById('bureau');
+
+    // Réinitialisation des options
+    communeSelect.innerHTML = '<option value="">اختر الجماعة</option>';
+    bureauSelect.innerHTML = '<option value="">اختر مكتب الحالة المدنية</option>';
+
+    if (cityId) {
+        // Faites un appel AJAX pour récupérer les communes
+        fetch(`/get-communes/${cityId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.communes.forEach(commune => {
+                    communeSelect.innerHTML += `<option value="${commune.id}">${commune.name}</option>`;
+                });
+            });
+
+        // Faites un appel AJAX pour récupérer les bureaux
+        fetch(`/get-bureaux/${cityId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.bureaux.forEach(bureau => {
+                    bureauSelect.innerHTML += `<option value="${bureau.id}">${bureau.name}</option>`;
+                });
+            });
+    }
+});
+</script>
+<script>
+    // Cities by Region
+const citiesByRegion = {
+    1: ["طنجة", "تطوان", "الحسيمة", "شفشاون"],
+    2: ["فاس", "مكناس", "إفران", "الحاجب"],
+    3: ["الرباط", "سلا", "القنيطرة", "تمارة"],
+    4: ["الدار البيضاء", "الجديدة", "سطات", "برشيد"],
+    5: ["مراكش", "آسفي", "الصويرة", "شيشاوة"],
+    6: ["بني ملال", "خنيفرة", "الفقيه بن صالح", "أزيلال"],
+    7: ["أكادير", "تارودانت", "تزنيت", "إنزكان"],
+    8: ["كلميم", "طانطان", "سيدي إفني"],
+    9: ["العيون", "بوجدور", "طرفاية"],
+    10: ["الداخلة", "أوسرد"],
+    11: ["الرشيدية", "ورزازات", "زاكورة"],
+    12: ["وجدة", "الناظور", "بركان"]
+};
+
+// Communes by City
+const communesByCity = {
+    "طنجة": ["بني مكادة", "مغوغة", "السواني"],
+    "تطوان": ["تطوان المدينة", "مرتيل", "السمارة"],
+    "الحسيمة": ["بني بوفراح", "بني حذيفة", "الرواضي"],
+    "فاس": ["فاس المدينة", "سايس", "زواغة"],
+    "الرباط": ["يعقوب المنصور", "أكدال الرياض", "السويسي"],
+    "الدار البيضاء": ["أنفا", "الفداء مرس السلطان", "عين الشق"],
+    "مراكش": ["المدينة", "النخيل", "جيليز"],
+    "العيون": ["المدينة القديمة", "المسيرة", "الإبداع"],
+    // Add more cities and their communes...
+};
+
+// Bureaux d'état civil by Commune
+const bureauByCommune = {
+    "بني مكادة": ["مكتب بني مكادة 1", "مكتب بني مكادة 2", "مكتب بني مكادة 3"],
+    "مغوغة": ["مكتب مغوغة 1", "مكتب مغوغة 2"],
+    "تطوان المدينة": ["مكتب تطوان المركز", "مكتب مرتيل", "مكتب السمارة"],
+    "سايس": ["مكتب سايس 1", "مكتب سايس 2", "مكتب سايس 3"],
+    "أنفا": ["مكتب أنفا 1", "مكتب أنفا 2", "مكتب أنفا 3"],
+    "النخيل": ["مكتب النخيل 1", "مكتب النخيل 2"],
+    "جيليز": ["مكتب جيليز 1", "مكتب جيليز 2"],
+    "المدينة القديمة": ["مكتب العيون 1", "مكتب العيون 2"],
+    // Add more communes and their bureaux...
+};
+
+
+        // Populate Cities based on Region
+        $('#region').on('change', function () {
+            const regionId = $(this).val();
+            const cities = citiesByRegion[regionId] || [];
+            $('#city').empty().append('<option value="">اختر المدينة أو الإقليم</option>');
+            cities.forEach(city => {
+                $('#city').append(new Option(city, city));
+            });
+            $('#commune, #bureau').empty().append('<option value="">اختر...</option>'); // Reset child dropdowns
+        });
+
+        // Populate Communes based on City
+        $('#city').on('change', function () {
+            const cityName = $(this).val();
+            const communes = communesByCity[cityName] || [];
+            $('#commune').empty().append('<option value="">اختر الجماعة</option>');
+            communes.forEach(commune => {
+                $('#commune').append(new Option(commune, commune));
+            });
+            $('#bureau').empty().append('<option value="">اختر مكتب الحالة المدنية</option>'); // Reset bureau dropdown
+        });
+
+        // Populate Bureaux d'état civil based on Commune
+        $('#commune').on('change', function () {
+            const communeName = $(this).val();
+            const bureaux = bureauByCommune[communeName] || [];
+            $('#bureau').empty().append('<option value="">اختر مكتب الحالة المدنية</option>');
+            bureaux.forEach(bureau => {
+                $('#bureau').append(new Option(bureau, bureau));
+            });
+        });
 </script>
 
 </body>

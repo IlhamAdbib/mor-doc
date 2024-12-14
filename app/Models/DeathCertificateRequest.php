@@ -30,36 +30,5 @@ class DeathCertificateRequest extends Model
         'delivery_country',
         'status'
     ];
-
-    public function citoyen()
-    {
-        return $this->belongsTo(Citoyen::class);
-    }
-
-    public function region()
-    {
-        return $this->belongsTo(Region::class);
-    }
-
-    public function city()
-    {
-        return $this->belongsTo(City::class);
-    }
-
-    public function commune()
-    {
-        return $this->belongsTo(Commune::class);
-    }
-
-    public function bureau()
-    {
-        return $this->belongsTo(Bureau::class);
-    }
-
-    public function documentAttachments()
-    {
-        return $this->hasMany(DocumentAttachment::class, 'request_id')
-            ->where('request_type', 'death_certificate');
-    }
 }
 
