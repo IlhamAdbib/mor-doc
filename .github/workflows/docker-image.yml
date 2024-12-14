@@ -1,0 +1,33 @@
+name: Build and Push Laravel Docker Compose
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Build Docker images using Docker Compose
+      - name: Build and tag Docker images
+        run: |
+          docker-compose build
+          docker tag laravel-app:latest ghizlanera/laravel-app:latest
+
+      # Push the Laravel app image to Docker Hub
+      - name: Push Laravel app image
+        run: |
+          docker push ghizlanera/laravel-app:latest

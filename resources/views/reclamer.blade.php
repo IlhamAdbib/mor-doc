@@ -132,42 +132,26 @@
                                 {{ Session::get('error') }}
                             </div>
                         @endif
-
+                    
                         <div class="form-group">
-                            <input type="email" class="form-input" name="email" id="email" placeholder="بريدك الإلكتروني (مثال: firstname.lastname@domain.ma)" pattern="[a-zA-Z0-9._%+-]+@.+\..+" title="يرجى إدخال بريد إلكتروني صالح" required/>
-                            <div id="email-validation-message" class="invalid-message"></div>
-                            <script>
-                                const emailInput = document.getElementById('email');
-                                const emailValidationMessage = document.getElementById('email-validation-message');
-
-                                emailInput.addEventListener('input', function () {
-                                    const emailPattern = /^[a-zA-Z0-9._%+-]+@.+\..+$/;
-                                    const isValid = emailPattern.test(emailInput.value);
-
-                                    if (isValid) {
-                                        emailValidationMessage.textContent = 'تنسيق صالح';
-                                        emailValidationMessage.className = 'valid-message';
-                                    } else {
-                                        emailValidationMessage.textContent = 'تنسيق غير صالح';
-                                        emailValidationMessage.className = 'invalid-message';
-                                    }
-                                });
-                            </script>
+                            <input type="email" class="form-input" name="email" id="email" placeholder="بريدك الإلكتروني" 
+                                   pattern="[a-zA-Z0-9._%+-]+@.+\..+" title="يرجى إدخال بريد إلكتروني صالح" required />
                         </div>
-
+                    
                         <div class="form-group">
-                            <input type="text" class="form-input" name="identifier" id="identifier" pattern="\d+" placeholder="رقمك التعريفي (إن وجد)" title="يرجى إدخال رقم صالح" />
+                            <input type="text" class="form-input" name="cin" id="cin" placeholder="رقم التعريف الشخصي (CIN)" 
+                                   title="يرجى إدخال رقم صالح" required />
                         </div>
-
+                    
                         <div class="form-group">
                             <textarea class="form-input" name="description" id="description" placeholder="وصف الشكوى" required></textarea>
                         </div>
-
+                    
                         <div class="form-group">
-                            <input type="submit" name="submit" id="submit" class="form-submit" value="إرسال"/>
+                            <input type="submit" name="submit" id="submit" class="form-submit" value="إرسال" />
                         </div>
                     </form>
-                    <p class="loginhere">
+                        <p class="loginhere">
                         <a href="{{ route('welcome') }}" class="loginhere-link">العودة إلى الصفحة الرئيسية</a>
                     </p>
                 </div>

@@ -9,20 +9,15 @@ class Reclamations extends Model
 {
     use HasFactory;
 
-    //declaration du nom de la table
-    protected $table = 'reclamations'; 
+    // Nom de la table
+    protected $table = 'reclamations';
 
-    //declaration des colonnes de la table
-
+    // Colonnes modifiables dans la table
     protected $fillable = [
-        'name',
         'email',
-        'apogee',
         'cin',
         'description',
     ];
 
-    protected $casts = [
-        'apogee' => 'integer',
-    ];
+    // Pas besoin de $casts ici, sauf si vous avez un type personnalisé à caster.
 }

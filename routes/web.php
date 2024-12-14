@@ -123,9 +123,12 @@ require __DIR__.'/auth.php';
 
 
 //pour acceder a la page de reclamations
-Route::get('/reclamer',[ReclamerController::class,'reclamer'])->name('reclamer');
+//Route::get('/reclamer',[ReclamerController::class,'reclamer'])->name('reclamer');
 //pour l'envoi de la reclamation
-Route::post('/reclamer',[ReclamerController::class,'reclamerPost'])->name('reclamer');
+//Route::post('/reclamer',[ReclamerController::class,'reclamerPost'])->name('reclamer');
+Route::get('/reclamer', [ReclamerController::class, 'reclamer'])->name('reclamer');
+Route::post('/reclamer', [ReclamerController::class, 'reclamerPost'])->name('reclamer');
+
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

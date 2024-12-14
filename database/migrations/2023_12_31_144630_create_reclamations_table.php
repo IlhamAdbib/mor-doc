@@ -15,9 +15,7 @@ return new class extends Migration
     {
         Schema::create('reclamations', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
             $table->string('email');
-            $table->integer('apogee');
             $table->string('cin');
             $table->text('description');
             $table->timestamps();
