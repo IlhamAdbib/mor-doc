@@ -8,26 +8,23 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout the code
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Log in to Docker Hub
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-      # Build Docker images using Docker Compose
-      - name: Build and tag Docker images
-        run: |
-          docker-compose build
-          docker tag laravel-app:latest ghizlanera/laravel-app:latest
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Push the Laravel app image to Docker Hub
-      - name: Push Laravel app image
-        run: |
-          docker push ghizlanera/laravel-app:latest
+    - name: Build and Tag Docker Image
+      run: |
+        docker build -t ghizlanera/laravel-app:latest .
+
+    - name: Push Docker Image to Docker Hub
+      run: |
+        docker push ghizlanera/laravel-app:latest
