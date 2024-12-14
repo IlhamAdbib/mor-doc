@@ -10,7 +10,7 @@ services:
 
 
   app:
-    image: ghizlanera/laravel-app:latest
+    image: ghizlanera/urba:latest
     container_name: laravel-app
     build:
       context: .

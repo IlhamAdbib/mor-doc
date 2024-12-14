@@ -23,8 +23,8 @@ jobs:
 
     - name: Build and Tag Docker Image
       run: |
-        docker build -t ghizlanera/laravel-app:latest .
+        docker build -t ghizlanera/urba:latest .
 
     - name: Push Docker Image to Docker Hub
       run: |
-        docker push ghizlanera/laravel-app:latest
+        docker push ghizlanera/urba:latest
