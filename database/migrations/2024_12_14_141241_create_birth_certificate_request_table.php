@@ -15,11 +15,10 @@ class CreateBirthCertificateRequestTable extends Migration
     {
         Schema::create('birth_certificate_requests', function (Blueprint $table) {
             $table->id(); // Colonne ID auto-incrémentée
-            $table->unsignedBigInteger('citoyen_id')->nullable();
-            $table->unsignedBigInteger('region_id')->nullable();
-            $table->unsignedBigInteger('city_id')->nullable();
-            $table->unsignedBigInteger('commune_id')->nullable();
-            $table->unsignedBigInteger('bureau_id')->nullable();
+            $table->string('region_id')->nullable();
+            $table->string('city_id')->nullable();
+            $table->string('commune_id')->nullable();
+            $table->string('bureau_id')->nullable();
             $table->string('birth_extract_doc_num')->nullable();
             $table->string('birth_complete_doc_num')->nullable();
             $table->string('marriage_interest')->nullable(); 
@@ -50,12 +49,6 @@ class CreateBirthCertificateRequestTable extends Migration
 
             $table->timestamps(); // Colonnes created_at et updated_at
 
-            // Ajout des relations avec clés étrangères
-            $table->foreign('citoyen_id')->references('id')->on('citoyens')->onDelete('set null');
-            $table->foreign('region_id')->references('id')->on('regions')->onDelete('set null');
-            $table->foreign('city_id')->references('id')->on('cities')->onDelete('set null');
-            $table->foreign('commune_id')->references('id')->on('communes')->onDelete('set null');
-            $table->foreign('bureau_id')->references('id')->on('bureaus')->onDelete('set null');
         });
     }
 

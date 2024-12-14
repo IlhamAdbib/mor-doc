@@ -2,365 +2,118 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Atsreussite;
-use App\Models\Atsscolarite;
-use App\Models\Atsconvention;
-use App\Models\Demandereleve;
-use App\Models\Demande;
-use App\Models\Etudiant;
-use App\Models\Students;
-use Illuminate\Support\Facades\DB;
+use App\Models\BirthCertificateRequest;
+use App\Models\Bureau;
+use App\Models\City;
+use App\Models\Commune;
+use App\Models\Region;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+use Illuminate\Support\Facades\DB;
 
 class DemanderController extends Controller
 {
-    //
-    //afficher le formulaire des demandes
-    public function demande(){
-        return view('demande');
+
+    public function demande()
+    {
+        $regions = Region::all();
+        return view('demande', compact('regions'));
     }
-
-    //enregistrer les informations de reclamation
-    public function demandePost(Request $request){
-
-        // Valider les données du formulaire
-        $request->validate([
-            'email' => 'required|email',
-            'apogee' => 'required|digits:8',
-            'cin' => 'required|regex:/^[A-Z]{1,2}\d{1,6}$/',
-            'document' => 'required',
+    
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'region' => 'required',
+            'city' => 'required',
+            'commune' => 'required',
+            'bureau' => 'required',
+            'birth_extract' => 'required',
+            'integral_copy' => 'required',
+            'marriage_type' => 'required',
+            'document_language' => 'required',
+            'first_name_ar' => 'required',
+            'last_name_ar' => 'required',
+            'first_name_latin' => 'required',
+            'last_name_latin' => 'required',
+            'mother_first_name' => 'required',
+            'mother_last_name' => 'required',
+            'father_first_name' => 'required',
+            'birth_day' => 'required',
+            'birth_month' => 'required',
+            'birth_year' => 'required',
+            'gender' => 'required',
+            'act_number' => 'required',
+            'transcription_year' => 'required',
+            'nom_complet' => 'required',
+            'recipient_email' => 'required',
+            'phone_country_code' => 'required',
+            'recipient_phone' => 'required',
+            'delivery_location' => 'required',
+            'address_line1' => 'required',
+            'address_line2' => 'required',
+            'postal_code' => 'required',
+            'locality' => 'required',
+            'country' => 'required',
         ]);
 
-        // Commune à tous les documents
-        $communData = [
-            'email' => $request->input('email'),
-            'apogee' => $request->input('apogee'),
-            'cin' => $request->input('cin'),
-        ];
+        $regionName = DB::table('regions')->where('id', $validated['region'])->value('name');
 
-        switch($request->input('document')){
+        DB::table('birth_certificate_requests')->insert([
+            'region_id' => $regionName, 
+            'city_id' => $validated['city'],
+            'commune_id' => $validated['commune'],
+            'bureau_id' => $validated['bureau'],
+            'birth_extract_doc_num' => $validated['birth_extract'],
+            'birth_complete_doc_num' => $validated['integral_copy'],
+            'marriage_interest' => $validated['marriage_type'],
+            'doc_language' => $validated['document_language'],
+            'first_name_ar' => $validated['first_name_ar'],
+            'last_name_ar' => $validated['last_name_ar'],
+            'first_name_fr' => $validated['first_name_latin'],
+            'last_name_fr' => $validated['last_name_latin'],
+            'mother_firstname' => $validated['mother_first_name'],
+            'mother_lastname' => $validated['mother_last_name'],
+            'father_firstname' => $validated['father_first_name'],
+            'day_birthdate' => $validated['birth_day'],
+            'month_birthdate' => $validated['birth_month'],
+            'year_birthdate' => $validated['birth_year'],
+            'gender' => $validated['gender'],
+            'doc_num' => $validated['act_number'],
+            'subscription_year' => $validated['transcription_year'],
+            'fullname' => $validated['nom_complet'],
+            'email' =>  $validated['recipient_email'],
+            'phone_code' =>  $validated['phone_country_code'],
+            'phone_number' =>  $validated['recipient_phone'],
+            'delivery_place' =>  $validated['delivery_location'],
+            'first_address' =>  $validated['address_line1'],
+            'second_address' =>  $validated['address_line2'],
+            'postal_code' =>  $validated['postal_code'],
+            'city' =>  $validated['locality'],
+            'country' =>  $validated['country'],
+        ]);
 
-            case 'option1':
-                $request->validate([
-                    'niveau' => 'required|in:1ere annee,2eme annee,3eme annee,4eme annee,5eme annee',
-                    'cne' => 'required|regex:/^[A-Za-z]\d{9}$/',
-                    'date_naissance' => 'required|date_format:Y-m-d',
-                ]);
-                // Vérification si les données existent déjà dans la table demande_releve
-                // $existingRecord = Atsscolarite::where([
-                //     'email' => $request->email,
-                //     'apogee' => $request->apogee,
-                //     'cin' => $request->cin,
-                //     'date_naissance' =>$request->date_naissance,
-                //     'cne'=>$request->cne,
-                //     'status' => 'en cours',
-                // ])->first();
-                $exists=Demande::where([
-                    'Appogé'=>$request->apogee,
-                    'Type'=>'Attestation de Scolarité',
-                    'Email'=>$request->email,
-                    'CIN'=>$request->cin,
-                    'Etat'=>'n'
-                ])->first();
-                $existingStudent = Etudiant::where([
-                    'email' => $request->email,
-                    'Appogé' => $request->apogee,
-                    'CIN' => $request->cin,
-                    'Niveau' =>$request->niveau,
-                ])->first();
-
-                if ($exists) {
-                     // Retournez avec un message d'erreur si les données existent déjà
-                     return redirect()->back()->withErrors(['error' => 'Vous avez déjà demandé ce document!']);
-                }
-
-                else if(!$exists && !$existingStudent){
-                    // Retournez avec un message d'erreur si les informations de cet étudiant n'existe pas
-                    return redirect()->back()->withErrors(['error' => 'Étudiant non trouvé avec les informations saisis, Veuillez réesayer!']);
-                }
-                else if(!$exists &&  $existingStudent){
-                    // Retournez avec un message pour confirmer l'envoi des données dans la BD
-                    // $prenom = DB::select('SELECT Prenom FROM etudiants WHERE Email = ? and  Appogé= ? and CIN=?', [$request->email, $request->apogee, $request->cin])[0];
-
-                    // $nom= DB::select('SELECT Nom FROM etudiants WHERE Email = ? and  Appogé= ? and CIN=?', [$request->email, $request->apogee, $request->cin])[0];
-                    // $cne= DB::select('SELECT CNE FROM etudiants WHERE Email = ? and  Appogé= ? and CIN=?', [$request->email, $request->apogee, $request->cin])[0];
-                    $prenom = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                        'Niveau' =>$request->niveau,
-                    ])->value('Prenom');
-                    
-                    $nom = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                        'Niveau' =>$request->niveau,
-                    ])->value('Nom');
-                    
-                    $cne = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                        'Niveau' =>$request->niveau,
-                    ])->value('CNE');
-                    
-                    Demande::create([
-                        'Appogé'=>$request->apogee,
-                        'Prenom'=>$prenom,
-                        'Nom'=>$nom,
-                        'Type'=>'Attestation de Scolarité',
-                        'Email'=>$request->email,
-                        'CIN'=>$request->cin,
-                        'CNE'=>$cne,
-                        'Etat'=>'n'
-                    ]);
-                    // Retournez avec un message pour confirmer l'envoi des données dans la BD
-                    return redirect()->back()->with('success', 'Votre demande a bien été envoyée!');
-                }
-                break;
-
-            case 'option2':
-                
-                $request->validate([
-                    'nomm' => 'required',
-                ]);
-
-                // Vérification si les données existent déjà dans la table demande_releve
-                // $existingRecord = Atsreussite::where([
-                //     'email' => $request->email,
-                //     'apogee' => $request->apogee,
-                //     'cin' => $request->cin,
-                //     'nom' => $request->nomm,
-                //     'status' => 'en cours',
-                // ])->first();
-                
-                $exists=Demande::where([
-                    'Appogé'=>$request->apogee,
-                    'Type'=>'Attestation de Reussite',
-                    'Email'=>$request->email,
-                    'CIN'=>$request->cin,
-                    'Etat'=>'n'
-                ])->first();
-
-                $existingStudent = Etudiant::where([
-                    'email' => $request->email,
-                    'Appogé' => $request->apogee,
-                    'CIN' => $request->cin,
-                ])->first();
-
-                if ($exists) {
-                    // Retournez avec un message d'erreur si les données existent déjà
-                    return redirect()->back()->withErrors(['error' => 'Vous avez déjà demandé ce document!']);
-                }
-
-                else if(!$exists && !$existingStudent){
-                    // Retournez avec un message d'erreur si les informations de cet étudiant n'existe pas
-                    return redirect()->back()->withErrors(['error' => 'Étudiant non trouvé avec les informations saisis, Veuillez réesayer!']);
-                }
-
-                else if(!$exists && $existingStudent){
-                    // Retournez avec un message pour confirmer l'envoi des données dans la BD
-                    $prenom = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                    ])->value('Prenom');
-                    
-                    $nom = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                    ])->value('Nom');
-                    
-                    $cne = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                    ])->value('CNE');
-
-                    Demande::create([
-                        'Appogé'=>$request->apogee,
-                        'Prenom'=>$prenom,
-                        'Nom'=>$nom,
-                        'Type'=>'Attestation de Reussite',
-                        'Email'=>$request->email,
-                        'CIN'=>$request->cin,
-                        'CNE'=>$cne,
-                        'Etat'=>'n'
-                    ]);
-                    
-                    // Retournez avec un message pour confirmer l'envoi des données dans la BD
-                    return redirect()->back()->with('success', 'Votre demande a bien été envoyée!');
-                }
-                break;
-
-            case 'option3':
-                $request->validate([
-                    'nom' => 'required|string',
-                    'annee_etude' => 'required|regex:/^\d{4}$/',
-                    'filiere' => 'required|in:GI,SCM,GC,GSTR,GM,BDIA',
-                    'date_debut' => 'required|date_format:Y-m-d',
-                    'date_fin' => 'required|date_format:Y-m-d',
-                    'sujet_stage' => 'required|string',
-                    'nom_societe' => 'required|string',
-                    'adr_societe' => 'required|string',
-                    'tel_societe' => 'required|string',
-                    'email_societe' => 'required|email',
-                    'nom_rep_societe' => 'required|string',
-                    'qualite_rep_societe' => 'required|string',
-                    'encadrant_societe' => 'required|string',
-                    'encadrant_pedagogique' => 'required|string',
-                ]);                
-                /* Vérification si les données existent déjà dans la table demande_releve
-                $existingRecord = Atsconvention::where([
-                    'email' => $request->email,
-                    'apogee' => $request->apogee,
-                    'cin' => $request->cin,
-                    'nom' => $request->nomm,
-                    'status' => 'en cours',
-                ])->first();*/
-                
-                $existingStudent = Etudiant::where([
-                    'email' => $request->email,
-                    'Appogé' => $request->apogee,
-                    'CIN' => $request->cin,
-                    //'fullname' => $request->nomm,
-                ])->first();
-
-               /* if ($existingRecord) {
-                    // Retournez avec un message d'erreur si les données existent déjà
-                    return redirect()->back()->withErrors(['error' => 'Vous avez déjà demandé ce document!']);
-                }*/
-
-                 if(!$existingStudent){
-                    // Retournez avec un message d'erreur si les informations de cet étudiant n'existe pas
-                    return redirect()->back()->withErrors(['error' => 'Étudiant non trouvé avec les informations saisis, Veuillez réesayer!']);
-                }
-
-                else if($existingStudent){
-                    // Retournez avec un message pour confirmer l'envoi des données dans la BD
-                    
-                    $prenom = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                    ])->value('Prenom');
-                    
-                    $nom = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                    ])->value('Nom');
-                    
-                    $cne = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                    ])->value('CNE');
-
-                    Demande::create([
-                        'Appogé'=>$request->apogee,
-                        'Prenom'=>$prenom,
-                        'Nom'=>$nom,
-                        'Type'=>'Convention de Stage',
-                        'Email'=>$request->email,
-                        'CIN'=>$request->cin,
-                        'CNE'=>$cne,
-                        'nomEntreprise'=>$request->nom_societe,
-                        'representant'=>$request->nom_rep_societe,
-                        'adressMail'=>$request->email_societe,
-                        'tele'=>$request->tel_societe,
-                        'adresseReel'=>$request->adr_societe,
-                        'periode'=>  'du' . $request->date_debut . 'au' . $request->date_fin,
-                        'encadrantEntreprise'=>$request->encadrant_societe,
-                        'encadrantEcole'=>$request->encadrant_pedagogique,
-                        'themeDeStage'=>$request->sujet_stage,
-                        'Etat'=>'n'
-                    ]);
-                    
-                    // Retournez avec un message pour confirmer l'envoi des données dans la BD
-                    return redirect()->back()->with('success', 'Votre demande a bien été envoyée!');
-                }
-                break;
-
-            case 'option4':
-                
-                $request->validate([
-                    'year' => 'required|in:2023-2024,2022-2023,2021-2022,2020-2021,2019-2020,2018-2019,2017-2018,2016-2017,2015-2016,2014-2015,2013-2014,2012-2013',
-                ]);
-
-                // Vérification si les données existent déjà dans la table demande_releve
-                
-                $exists=Demande::where([
-                    'Appogé'=>$request->apogee,
-                    'Type'=>'Relevé de Notes',
-                    'Email'=>$request->email,
-                    'CIN'=>$request->cin,
-                    'Etat'=>'n'
-                ])->first();
-                
-                $existingStudent = Etudiant::where([
-                    'email' => $request->email,
-                    'Appogé' => $request->apogee,
-                    'CIN' => $request->cin
-                ])->first();
-
-                if ($exists) {
-                    // Retournez avec un message d'erreur si les données existent déjà
-                    return redirect()->back()->withErrors(['error' => 'Vous avez déjà demandé ce document!']);
-                }
-
-                else if(!$exists && !$existingStudent){
-                    // Retournez avec un message d'erreur si les informations de cet étudiant n'existe pas
-                    return redirect()->back()->withErrors(['error' => 'Étudiant non trouvé avec les informations saisis, Veuillez réesayer!']);
-                }
-
-                else if(!$exists && $existingStudent){
-                    // Retournez avec un message pour confirmer l'envoi des données dans la BD
-                    
-                    $prenom = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                    ])->value('Prenom');
-                    
-                    $nom = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                    ])->value('Nom');
-                    
-                    $cne = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                    ])->value('CNE');
-                    
-                    $semestre = Etudiant::where([
-                        'email' => $request->email,
-                        'Appogé' => $request->apogee,
-                        'CIN' => $request->cin,
-                    ])->value('semestreAct');
-                    
-                    Demande::create([
-                        'Appogé'=>$request->apogee,
-                        'Prenom'=>$prenom,
-                        'Nom'=>$nom,
-                        'Type'=>'Relevé de Notes',
-                        'Semestre'=>$semestre,
-                        'Email'=>$request->email,
-                        'CIN'=>$request->cin,
-                        'CNE'=>$cne,
-                        'Etat'=>'n'
-                    ]);
-                    
-                    // Retournez avec un message pour confirmer l'envoi des données dans la BD
-                    return redirect()->back()->with('success', 'Votre demande a bien été envoyée!');
-                }
-
-                break;
-
-        }
+        return back()->with('success', 'تم تسجيل البيانات بنجاح!');
     }
+
+    public function getCities($regionId)
+    {
+        $cities = City::where('region_id', $regionId)->get();
+        return response()->json(['cities' => $cities]);
+    }
+
+    public function getCommunes($cityId)
+    {
+        $communes = Commune::where('city_id', $cityId)->get();
+        return response()->json(['communes' => $communes]);
+    }
+
+    public function getBureaux($cityId)
+    {
+        $bureaux = Bureau::where('city_id', $cityId)->get(); 
+        return response()->json(['bureaux' => $bureaux]);
+    }
+
 }
+
