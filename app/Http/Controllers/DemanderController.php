@@ -94,7 +94,7 @@ class DemanderController extends Controller
             'country' =>  $validated['country'],
         ]);
 
-        return back()->with('success', 'تم تسجيل البيانات بنجاح!');
+        return back()->with('success', 'تم إرسال الطلب بنجاح !');
     }
 
     public function getCities($regionId)
