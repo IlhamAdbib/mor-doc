@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 
 class decesController extends Controller
 {
-    public function residence(){
-        return view('residence');
+    public function deces(){
+        return view('deces');
     }
 
     //enregistrer les informations de reclamation
