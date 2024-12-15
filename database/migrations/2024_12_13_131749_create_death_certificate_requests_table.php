@@ -12,10 +12,9 @@ class CreateDeathCertificateRequestsTable extends Migration
             $table->id();
 
             // Administrative Details
-            $table->foreignId('region_id')->constrained();
-            $table->foreignId('city_id')->constrained();
-            $table->foreignId('commune_id')->constrained();
-            $table->foreignId('bureau_id')->constrained();
+            $table->string('region_id')->nullable();
+            $table->string('city_id')->nullable();
+            $table->string('commune_id')->nullable();
 
             // Requester Details
             $table->enum('requester_relationship', [
@@ -24,19 +23,19 @@ class CreateDeathCertificateRequestsTable extends Migration
                 'child',
                 'legal_guardian',
                 'authorized_proxy'
-            ]);
-            $table->string('requester_first_name_ar');
-            $table->string('requester_last_name_ar');
-            $table->string('requester_cnie_number');
-            $table->string('requester_phone_country_code');
-            $table->string('requester_phone');
+            ])->nullable();
+            $table->string('requester_first_name_ar')->nullable();
+            $table->string('requester_last_name_ar')->nullable();
+            $table->string('requester_cnie_number')->nullable();
+            $table->string('requester_phone_country_code')->nullable();
+            $table->string('requester_phone')->nullable();
 
             // Death Information
-            $table->date('death_date');
+            $table->date('death_date')->nullable();
             $table->string('death_place')->nullable();
             $table->string('death_cause')->nullable();
             $table->string('document_number')->nullable();
-            $table->year('inscription_year');
+            $table->year('inscription_year')->nullable();
             $table->string('family_book_number')->nullable();
 
             // Delivery Details
@@ -44,17 +43,17 @@ class CreateDeathCertificateRequestsTable extends Migration
             $table->string('recipient_email')->nullable();
             $table->string('recipient_phone_country_code')->nullable();
             $table->string('recipient_phone')->nullable();
-            $table->enum('delivery_location', ['morocco', 'abroad'])->default('morocco');
+            $table->enum('delivery_location', ['morocco', 'abroad'])->default('morocco')->nullable();
             $table->string('address_line1')->nullable();
             $table->string('address_line2')->nullable();
             $table->string('postal_code')->nullable();
             $table->string('locality')->nullable();
-            $table->string('country')->default('MA');
+            $table->string('country')->default('MA')->nullable();
 
             // Document Paths
-            $table->string('requester_cnie_document_path');
+            $table->string('requester_cnie_document_path')->nullable();
             $table->string('relationship_proof_document_path')->nullable();
-            $table->string('medical_death_certificate_path');
+            $table->string('medical_death_certificate_path')->nullable();
 
             $table->timestamps();
         });
