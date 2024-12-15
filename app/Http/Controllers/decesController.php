@@ -35,7 +35,7 @@ class decesController extends Controller
             'death_cause' => 'required', 
             'document_number' => 'required',
             'inscription_year' => 'required',
-            'family_book_number' => 'required',
+            'family_book_number' => 'nullable|string',
             'recipient_full_name' => 'required',
             'recipient_email' => 'required',
             'recipient_phone' => 'required',
@@ -45,9 +45,26 @@ class decesController extends Controller
             'postal_code' => 'required',
             'locality' => 'required',
             'country' => 'required',
+            'requester_cnie_document' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+            'relationship_proof_document' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+            'medical_death_certificate' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
         ]);
 
         $regionName = DB::table('regions')->where('id', $validated['region'])->value('name');
+
+        // Enregistrer les fichiers téléchargés
+        $cnieDocumentPath = $request->file('requester_cnie_document')
+        ? $request->file('requester_cnie_document')->store('documents/cnie', 'public')
+        : null;
+
+        $relationshipProofPath = $request->file('relationship_proof_document')
+        ? $request->file('relationship_proof_document')->store('documents/relationship_proofs', 'public')
+        : null;
+
+        $medicalDeathCertificatePath = $request->file('medical_death_certificate')
+        ? $request->file('medical_death_certificate')->store('documents/death_certificates', 'public')
+        : null;
+
 
         DB::table('death_certificate_requests')->insert([
             'region_id' => $regionName, 
@@ -73,6 +90,10 @@ class decesController extends Controller
             'postal_code' => $validated['postal_code'],
             'locality' => $validated['locality'],
             'country' => $validated['country'],
+             // Chemins des fichiers
+            'requester_cnie_document_path' => $cnieDocumentPath,
+            'relationship_proof_document_path' => $relationshipProofPath,
+            'medical_death_certificate_path' => $medicalDeathCertificatePath,
         ]);
 
         return back()->with('success', 'تم إرسال الطلب بنجاح !');
