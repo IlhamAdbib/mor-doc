@@ -94,7 +94,7 @@
 
             <div class="mb-3">
                 <label class="form-label">مرفق صورة من البطاقة الوطنية</label>
-                <input type="file" class="form-control" name="requester_cnie_document" accept=".pdf,.jpg,.png" required>
+                <input type="file" class="form-control" name="requester_cnie_document" accept=".pdf,.jpg,.png">
             </div>
 
             <div class="mb-3">
@@ -104,7 +104,7 @@
 
             <div class="mb-3">
                 <label class="form-label">الوثيقة الطبية للوفاة</label>
-                <input type="file" class="form-control" name="medical_death_certificate" accept=".pdf,.jpg,.png" required>
+                <input type="file" class="form-control" name="medical_death_certificate" accept=".pdf,.jpg,.png">
             </div>
 
             <div class="mb-3">
@@ -139,6 +139,8 @@
                 <label class="form-label">السنة</label>
                 <select class="form-select" name="inscription_year">
                     <option value="">اختر سنة التسجيل</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
                 </select>
             </div>
 
@@ -340,6 +342,50 @@ const bureauByCommune = {
             });
         });
 </script>
+<script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2024/12/14/13/20241214130417-DY05I8AQ.js"></script>
 
+    <!-- Custom Script to Position and Toggle Chatbot -->
+    <script>
+        // Initialize the chatbot
+        window.botpressWebChat.init({
+            configUrl: "https://files.bpcontent.cloud/2024/12/14/13/20241214130417-9BRV1IIW.json",
+            hostUrl: "https://cdn.botpress.cloud/webchat/v2.3",
+            closeButton: true,         // Enables the close button
+            showPoweredBy: false,      // Removes 'Powered by Botpress' footer
+        });
+
+        // Functionality to toggle the chatbot visibility
+        const toggleChatbot = () => {
+            const iframe = document.querySelector("iframe[src*='webchat']");
+            if (iframe) {
+                iframe.style.display = iframe.style.display === "none" ? "block" : "none";
+            }
+        };
+
+        // Add a floating button at the bottom right
+        document.addEventListener("DOMContentLoaded", () => {
+            const button = document.createElement("button");
+            button.innerText = "💬";
+            button.style.position = "fixed";
+            button.style.bottom = "20px";
+            button.style.right = "20px";
+            button.style.backgroundColor = "#007bff"; // Blue background
+            button.style.color = "white";            // White chat icon
+            button.style.border = "none";
+            button.style.borderRadius = "50%";
+            button.style.width = "60px";
+            button.style.height = "60px";
+            button.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+            button.style.cursor = "pointer";
+            button.style.fontSize = "28px";
+            button.style.display = "flex";
+            button.style.alignItems = "center";
+            button.style.justifyContent = "center";
+            button.style.zIndex = "1000"; // Ensure it appears on top of other elements
+            button.addEventListener("click", toggleChatbot);
+            document.body.appendChild(button);
+        });
+    </script>
 </body>
 </html>
