@@ -1,37 +1,35 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: laravel
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
   app:
+    image: ghizlanera/laravel-app:latest
+    container_name: laravel-app
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: laravel-app
     ports:
-      - "8000:80"
-    volumes:
-      - .:/var/www/html
+      - "8080:80"
     environment:
-      - DB_HOST=127.0.0.1
+      - DB_HOST=mysql-db
       - DB_PORT=3306
       - DB_DATABASE=laravel
       - DB_USERNAME=root
       - DB_PASSWORD=secret
     depends_on:
-      - db
+      - mysql
+    networks:
+      - app-network
 
-  db:
-    image: mysql:8.0
-    container_name: mysql-db
-    restart: always
-    environment:
-      MYSQL_DATABASE: laravel
-      MYSQL_USER: root
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: secret
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-
-volumes:
-  db_data:
+networks:
+  app-network:
+    driver: bridge
