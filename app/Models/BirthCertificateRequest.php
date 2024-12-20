@@ -42,7 +42,7 @@ class BirthCertificateRequest extends Model
         'postal_code',
         'city',
         'country',
-        'cin'
+        'cin',
     ];
 
 }
