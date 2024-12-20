@@ -112,7 +112,7 @@
     </header>
     <main>
         <nav class="menu">
-            <a href="#" onclick="updateContent('طلبات الوثائق', 'هنا يمكنك الاطلاع على طلبات الوثائق.'); return false;">طلبات الوثائق</a>
+            <a href="{{ route('document_requests') }}">طلبات الوثائق</a>
             <a href="{{ route('reclamations') }}">الشكاوى</a>
             <a href="{{ route('logout') }}">تسجيل الخروج</a>
         </nav>

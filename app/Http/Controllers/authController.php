@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Citoyen; // Remarquez qu'il s'agit de votre modèle 'Citoyen' ici
 use App\Models\Reclamations;
+use App\Models\BirthCertificateRequest;
+use App\Models\DeathCertificateRequest;
+use App\Models\ResidenceCertificateRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -91,4 +94,19 @@ class AuthController extends Controller
         // Retourner la vue avec les réclamations
         return view('reclamations', compact('reclamations'));
     }
+
+    public function showDocumentRequests()
+    {
+        // Récupérer le CIN de l'utilisateur connecté
+        $cin = Auth::user()->cin;
+
+        // Récupérer les demandes pour chaque type de document
+        $birthRequests = BirthCertificateRequest::where('cin', $cin)->get();
+        $deathRequests = DeathCertificateRequest::where('requester_cnie_number', $cin)->get();
+        $residenceRequests = ResidenceCertificateRequest::where('cin', $cin)->get();
+
+        // Passer les données à la vue
+        return view('document_requests', compact('birthRequests', 'deathRequests', 'residenceRequests'));
+    }
+
 }

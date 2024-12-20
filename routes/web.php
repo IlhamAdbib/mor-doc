@@ -140,6 +140,7 @@ Route::get('/reclamations', [AuthController::class, 'showUserReclamations'])
     ->name('reclamations')
     ->middleware('auth');
 
+Route::get('/document-requests', [AuthController::class, 'showDocumentRequests'])->name('document_requests');
 // //pour acceder a la page de demande d'attestation de reussite
 // Route::get('/reussite',[ReussiteController::class,'reussite'])->name('reussite');
 // //pour l'envoi de la demande d'attestation de reussite
