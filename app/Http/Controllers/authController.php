@@ -12,6 +12,8 @@ use App\Models\ResidenceCertificateRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class AuthController extends Controller
 {
     /**
@@ -21,35 +23,6 @@ class AuthController extends Controller
     {
         return view('login');
     }
-
-    /**
-     * Gérer la tentative de connexion
-     */
-    /*
-    public function login(Request $request)
-    {
-        // Valider la requête entrante
-        $request->validate([
-            'cin' => 'required|string',
-            'password' => 'required|string'
-        ]);
-
-        // Trouver le citoyen par le numéro de CNI
-        $citoyen = User::where('cin', $request->input('cin'))->first();
-
-        // Vérifier si le citoyen existe et si le mot de passe correspond
-        if ($citoyen && $citoyen->password === $request->input('password')) {
-            // Authentifier l'utilisateur
-            Auth::login($citoyen);
-
-            // Rediriger vers la page de bienvenue ou tableau de bord
-            return redirect()->route('Citoyen_espace');
-        } else {
-            return back()->withErrors(['cin' => 'Identifiant ou mot de passe incorrect.']);
-        }
-        
-    }
-        */
 
         public function login(Request $request)
         {
@@ -107,6 +80,27 @@ class AuthController extends Controller
 
         // Passer les données à la vue
         return view('document_requests', compact('birthRequests', 'deathRequests', 'residenceRequests'));
+    }
+
+    public function downloadPdf($id)
+    {
+        // Recherche générique de la demande parmi tous les types
+        $document = BirthCertificateRequest::find($id) 
+                    ?? DeathCertificateRequest::find($id) 
+                    ?? ResidenceCertificateRequest::find($id);
+
+        if (!$document) {
+            abort(404, 'Document non trouvé.');
+        }
+
+        // Générer le contenu HTML pour le PDF
+        $html = view('pdf.document', compact('document'))->render();
+
+        // Générer le PDF
+        $pdf = Pdf::loadHTML($html);
+
+        // Télécharger le fichier PDF
+        return $pdf->download("document_{$id}.pdf");
     }
 
 }

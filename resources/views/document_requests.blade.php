@@ -151,7 +151,7 @@
                             </td>
                             <td>
                                 @if($request->statut == 'Acceptée')
-                                    <a class="btn">تنزيل</a>
+                                    <a class="btn" href="{{ route('download_pdf', ['id' => $request->id]) }}">تنزيل</a>
                                 @else
                                     غير متاح
                                 @endif
@@ -172,7 +172,7 @@
                             </td>
                             <td>
                                 @if($request->statut == 'Acceptée')
-                                    <a class="btn">تنزيل</a>
+                                    <a class="btn" href="{{ route('download_pdf', ['id' => $request->id]) }}">تنزيل</a>
                                 @else
                                     غير متاح
                                 @endif
@@ -193,7 +193,7 @@
                             </td>
                             <td>
                                 @if($request->statut == 'Acceptée')
-                                    <a class="btn">تنزيل</a>
+                                    <a class="btn" href="{{ route('download_pdf', ['id' => $request->id]) }}">تنزيل</a>
                                 @else
                                     غير متاح
                                 @endif
