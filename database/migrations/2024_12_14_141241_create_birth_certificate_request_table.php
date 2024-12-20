@@ -47,6 +47,7 @@ class CreateBirthCertificateRequestTable extends Migration
             $table->string('city')->nullable();
             $table->string('country')->nullable();
             $table->string('cin')->nullable();
+            $table->string('statut')->nullable();
 
             $table->timestamps(); // Colonnes created_at et updated_at
 

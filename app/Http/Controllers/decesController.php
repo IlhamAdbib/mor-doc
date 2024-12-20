@@ -97,6 +97,7 @@ class decesController extends Controller
             'requester_cnie_document_path' => $cnieDocumentPath,
             'relationship_proof_document_path' => $relationshipProofPath,
             'medical_death_certificate_path' => $medicalDeathCertificatePath,
+            'statut' => 'En cours',
         ]);
 
         Mail::to($validated['recipient_email'])->send(new DeathCertificateRequestMail());

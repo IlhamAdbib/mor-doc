@@ -64,6 +64,7 @@ class ResidenceController extends Controller
             'first_address' => $validated['address_line1'],
             'second_address' => $validated['address_line2'],
             'country' => $validated['country'],
+            'statut' => 'En cours',
         ]);
 
         // Send Arabic email

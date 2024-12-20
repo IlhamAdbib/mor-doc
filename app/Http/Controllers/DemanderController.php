@@ -96,6 +96,7 @@ class DemanderController extends Controller
             'city' =>  $validated['locality'],
             'country' =>  $validated['country'],
             'cin' =>  $validated['cin'],
+            'statut' => 'En cours',
         ]);
         Mail::to($validated['recipient_email'])->send(new BirthCertificateRequestMail($validated['nom_complet']));
 

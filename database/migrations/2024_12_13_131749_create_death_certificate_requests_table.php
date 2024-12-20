@@ -54,6 +54,7 @@ class CreateDeathCertificateRequestsTable extends Migration
             $table->string('requester_cnie_document_path')->nullable();
             $table->string('relationship_proof_document_path')->nullable();
             $table->string('medical_death_certificate_path')->nullable();
+            $table->string('statut')->nullable();
 
             $table->timestamps();
         });

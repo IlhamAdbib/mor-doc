@@ -36,6 +36,7 @@ class CreateResidenceCertificateRequestTable extends Migration
             $table->string('first_address')->nullable();
             $table->string('second_address')->nullable();
             $table->string('country')->nullable();
+            $table->string('statut')->nullable();
 
             $table->timestamps(); // Colonnes created_at et updated_at
         });
