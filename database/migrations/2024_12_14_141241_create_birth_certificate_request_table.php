@@ -46,6 +46,7 @@ class CreateBirthCertificateRequestTable extends Migration
             $table->string('postal_code', 10)->nullable();
             $table->string('city')->nullable();
             $table->string('country')->nullable();
+            $table->string('cin')->nullable();
 
             $table->timestamps(); // Colonnes created_at et updated_at
 

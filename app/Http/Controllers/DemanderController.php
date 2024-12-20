@@ -31,6 +31,7 @@ class DemanderController extends Controller
             'city' => 'required',
             'commune' => 'required',
             'bureau' => 'required',
+            'cin' => 'required',
             'birth_extract' => 'required',
             'integral_copy' => 'required',
             'marriage_type' => 'required',
@@ -94,6 +95,7 @@ class DemanderController extends Controller
             'postal_code' =>  $validated['postal_code'],
             'city' =>  $validated['locality'],
             'country' =>  $validated['country'],
+            'cin' =>  $validated['cin'],
         ]);
         Mail::to($validated['recipient_email'])->send(new BirthCertificateRequestMail($validated['nom_complet']));
 

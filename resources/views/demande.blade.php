@@ -198,6 +198,11 @@
                             </select>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">رقم البطاقة الوطنية</label>
+                            <input type="text" class="form-control" name="cin" placeholder="أدخل رقم البطاقة الوطنية" required>
+                        </div>
+            
                         <h3 class="text-primary mb-4 text-center">الوثائق المطلوبة</h3>
 
                         <div class="row">

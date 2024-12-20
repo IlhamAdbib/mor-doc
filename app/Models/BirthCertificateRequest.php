@@ -41,7 +41,8 @@ class BirthCertificateRequest extends Model
         'second_address',
         'postal_code',
         'city',
-        'country'
+        'country',
+        'cin'
     ];
 
 }
