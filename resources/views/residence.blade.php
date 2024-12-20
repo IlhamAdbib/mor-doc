@@ -17,23 +17,33 @@
             background-color: white;
         }
     </style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
 </head>
 <body>
 
 <div class="container mt-5">
     <div class="form-container">
         <h2 class="text-center mb-4">طلب شهادة السكنى</h2>
-        
+
         <!-- Success message -->
         @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-        @endif
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Success!',
+                    text: "{{ session('success') }}",
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+            });
+        </script>
+    @endif
+
 
         <form action="{{ route('residence') }}" method="POST" enctype="multipart/form-data">
             @csrf
-        
+
 
             <!-- معلومات شخصية -->
             <h4 class="text-primary mt-4">معلومات شخصية</h4>
@@ -223,5 +233,7 @@
             document.body.appendChild(button);
         });
     </script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 </html>

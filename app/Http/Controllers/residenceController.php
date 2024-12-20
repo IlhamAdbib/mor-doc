@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ResidenceCertificateRequest;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ResidenceCertificateRequestNotification;
 
 class ResidenceController extends Controller
 {
@@ -14,7 +16,6 @@ class ResidenceController extends Controller
 
     public function demandePost(Request $request)
     {
-        // تحقق من صحة المدخلات
         $validated = $request->validate([
             'first_name_ar' => 'required|string|max:255',
             'last_name_ar' => 'required|string|max:255',
@@ -38,11 +39,9 @@ class ResidenceController extends Controller
             'recipient_phone' => 'nullable|string|max:20',
         ]);
 
-        // رفع الملفات وتخزين المسارات
         $proofDocPath = $request->file('supporting_document')->store('proof_docs', 'public');
         $cinPath = $request->file('id_document')->store('cin_docs', 'public');
 
-        // تخزين البيانات
         ResidenceCertificateRequest::create([
             'firstname' => $validated['first_name_ar'],
             'lastname' => $validated['last_name_ar'],
@@ -59,7 +58,7 @@ class ResidenceController extends Controller
             'cin_path' => $cinPath,
             'fullname' => $validated['recipient_name'],
             'email' => $validated['recipient_email'],
-            'phone_code' => $validated['recipient_phone'], 
+            'phone_code' => $validated['recipient_phone'],
             'phone_number' => $validated['recipient_phone'],
             'delivery_place' => $validated['delivery_location'],
             'first_address' => $validated['address_line1'],
@@ -67,12 +66,15 @@ class ResidenceController extends Controller
             'country' => $validated['country'],
         ]);
 
-         // Ajouter un message flash
+        // Send Arabic email
+        if (!empty($validated['recipient_email'])) {
+            $details = [
+                'cnie_number' => $validated['cnie_number']
+            ];
+            Mail::to($validated['recipient_email'])->send(new ResidenceCertificateRequestNotification($details));
+        }
+
         session()->flash('success', 'تم إرسال الطلب بنجاح !');
         return redirect()->route('residence');
-
-        
-        // إعادة توجيه مع رسالة نجاح
-        //return redirect()->route('residence')->with('success', 'تم إرسال الطلب بنجاح!');
     }
 }

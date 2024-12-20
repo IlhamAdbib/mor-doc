@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BirthCertificateRequestMail;
 
 class DemanderController extends Controller
 {
@@ -21,7 +23,7 @@ class DemanderController extends Controller
         $regions = Region::all();
         return view('demande', compact('regions'));
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -61,7 +63,7 @@ class DemanderController extends Controller
         $regionName = DB::table('regions')->where('id', $validated['region'])->value('name');
 
         DB::table('birth_certificate_requests')->insert([
-            'region_id' => $regionName, 
+            'region_id' => $regionName,
             'city_id' => $validated['city'],
             'commune_id' => $validated['commune'],
             'bureau_id' => $validated['bureau'],
@@ -93,6 +95,8 @@ class DemanderController extends Controller
             'city' =>  $validated['locality'],
             'country' =>  $validated['country'],
         ]);
+        Mail::to($validated['recipient_email'])->send(new BirthCertificateRequestMail($validated['nom_complet']));
+
 
         return back()->with('success', 'تم إرسال الطلب بنجاح !');
     }
@@ -111,7 +115,7 @@ class DemanderController extends Controller
 
     public function getBureaux($cityId)
     {
-        $bureaux = Bureau::where('city_id', $cityId)->get(); 
+        $bureaux = Bureau::where('city_id', $cityId)->get();
         return response()->json(['bureaux' => $bureaux]);
     }
 

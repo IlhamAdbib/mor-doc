@@ -115,6 +115,8 @@
             display: none;
         }
     </style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
 </head>
 <body>
 
@@ -128,13 +130,20 @@
                     <h2 class="text-center mb-4">طلب عقد الازدياد</h2>
                     <form action="{{ route('demande.store') }}" method="POST">
                         @csrf
-                    
-                        @if (session('success'))
-                            <div class="alert alert-success">
-                                {{ session('success') }}
-                            </div>
-                        @endif
-                    
+
+                        @if(session('success'))
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: "{{ session('success') }}",
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                });
+                            });
+                        </script>
+                    @endif
+
                         @if ($errors->any())
                             <div class="alert alert-danger">
                                 <ul>
@@ -144,7 +153,7 @@
                                 </ul>
                             </div>
                         @endif
-                    
+
                         <!-- Select Region -->
                         <div class="mb-3">
                             <label for="region" class="form-label">الجهة</label>
@@ -164,7 +173,7 @@
                                 <option value="12">جهة الشرق</option>
                             </select>
                         </div>
-                    
+
                         <!-- Select City -->
                         <div class="mb-3">
                             <label for="city" class="form-label">المدينة أو الإقليم</label>
@@ -172,7 +181,7 @@
                                 <option value="">اختر المدينة أو الإقليم</option>
                             </select>
                         </div>
-                    
+
                         <!-- Select Commune -->
                         <div class="mb-3">
                             <label for="commune" class="form-label">الجماعة</label>
@@ -180,7 +189,7 @@
                                 <option value="">اختر الجماعة</option>
                             </select>
                         </div>
-                    
+
                         <!-- Select Bureau d'état civil -->
                         <div class="mb-3">
                             <label for="bureau" class="form-label">مكتب الحالة المدنية</label>
@@ -287,7 +296,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                         </div>
 
                         <div class="row">
@@ -387,14 +396,14 @@
                                 <!-- Add more countries as needed -->
                             </select>
                         </div>
-                    
+
                         <div class="d-flex justify-content-center mt-4">
                             <button type="submit" class="btn btn-primary">
                                 تقديم الطلب <i class="bi bi-arrow-right"></i>
                             </button>
                         </div>
-                    </form>                    
-                    
+                    </form>
+
                     <script>
                         document.getElementById('region').addEventListener('change', function () {
                         let regionId = this.value;
@@ -669,5 +678,7 @@ const bureauByCommune = {
             document.body.appendChild(button);
         });
     </script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 </html>

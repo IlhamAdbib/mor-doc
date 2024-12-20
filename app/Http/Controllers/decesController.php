@@ -6,6 +6,9 @@ use App\Models\Bureau;
 use App\Models\City;
 use App\Models\Commune;
 use App\Models\Region;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DeathCertificateRequestMail;
+
 
 use Illuminate\Http\Request;
 
@@ -25,14 +28,14 @@ class decesController extends Controller
             'region' => 'required',
             'city' => 'required',
             'commune' => 'required',
-            'requester_relationship' => 'required', 
-            'requester_first_name_ar' => 'required',  
-            'requester_last_name_ar' => 'required', 
-            'requester_cnie_number' => 'required', 
-            'requester_phone' => 'required', 
-            'death_date' => 'required', 
-            'death_place' => 'required', 
-            'death_cause' => 'required', 
+            'requester_relationship' => 'required',
+            'requester_first_name_ar' => 'required',
+            'requester_last_name_ar' => 'required',
+            'requester_cnie_number' => 'required',
+            'requester_phone' => 'required',
+            'death_date' => 'required',
+            'death_place' => 'required',
+            'death_cause' => 'required',
             'document_number' => 'required',
             'inscription_year' => 'required',
             'family_book_number' => 'nullable|string',
@@ -67,7 +70,7 @@ class decesController extends Controller
 
 
         DB::table('death_certificate_requests')->insert([
-            'region_id' => $regionName, 
+            'region_id' => $regionName,
             'city_id' => $validated['city'],
             'commune_id' => $validated['commune'],
             'requester_relationship' => $validated['requester_relationship'],
@@ -96,6 +99,7 @@ class decesController extends Controller
             'medical_death_certificate_path' => $medicalDeathCertificatePath,
         ]);
 
+        Mail::to($validated['recipient_email'])->send(new DeathCertificateRequestMail());
         return back()->with('success', 'تم إرسال الطلب بنجاح !');
 
     }
@@ -114,7 +118,7 @@ class decesController extends Controller
 
     public function getBureaux($cityId)
     {
-        $bureaux = Bureau::where('city_id', $cityId)->get(); 
+        $bureaux = Bureau::where('city_id', $cityId)->get();
         return response()->json(['bureaux' => $bureaux]);
     }
 

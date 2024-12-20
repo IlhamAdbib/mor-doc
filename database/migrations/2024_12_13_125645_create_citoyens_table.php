@@ -21,6 +21,7 @@ class CreateCitoyensTable extends Migration
             $table->string('postal_code')->nullable();
             $table->string('city')->nullable();
             $table->string('country')->default('MA');
+            $table->string('password');
             $table->timestamps();
         });
     }

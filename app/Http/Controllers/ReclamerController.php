@@ -28,6 +28,7 @@ class ReclamerController extends Controller
             'email' => $request->email,
             'cin' => $request->cin,
             'description' => $request->description,
+            'statut' => 'En cours',
         ]);
 
         // Retourner un message de succès

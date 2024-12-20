@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Citoyen; // Remarquez qu'il s'agit de votre modèle 'Citoyen' ici
+use App\Models\Reclamations;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     /**
-     * Show the login form
+     * Afficher le formulaire de connexion
      */
     public function showLoginForm()
     {
@@ -18,58 +20,75 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle an authentication attempt
+     * Gérer la tentative de connexion
      */
+    /*
     public function login(Request $request)
     {
-        // Validate the incoming request
+        // Valider la requête entrante
         $request->validate([
             'cin' => 'required|string',
-            'reference' => 'required|string'
+            'password' => 'required|string'
         ]);
 
-        // Find user by CIN
-        $user = User::where('cin', $request->input('cin'))->first();
+        // Trouver le citoyen par le numéro de CNI
+        $citoyen = User::where('cin', $request->input('cin'))->first();
 
-        // Check if user exists and reference matches
-        if ($user && $this->checkReference($user, $request->input('reference'))) {
-            // Authenticate the user
-            Auth::login($user);
+        // Vérifier si le citoyen existe et si le mot de passe correspond
+        if ($citoyen && $citoyen->password === $request->input('password')) {
+            // Authentifier l'utilisateur
+            Auth::login($citoyen);
 
-            // Redirect to intended page or dashboard
-            return redirect()->intended('/dashboard');
+            // Rediriger vers la page de bienvenue ou tableau de bord
+            return redirect()->route('Citoyen_espace');
+        } else {
+            return back()->withErrors(['cin' => 'Identifiant ou mot de passe incorrect.']);
+        }
+        
+    }
+        */
+
+        public function login(Request $request)
+        {
+            // Valider les entrées
+            $request->validate([
+                'cin' => 'required|string',
+                'password' => 'required|string',
+            ]);
+        
+            // Rechercher l'utilisateur par CIN
+            $user = User::where('cin', $request->input('cin'))->first();
+        
+            // Vérifier si l'utilisateur existe et si le mot de passe est correct
+            if ($user && $user->password === $request->input('password')) {
+                // Connecter l'utilisateur
+                Auth::login($user);
+        
+                // Rediriger vers le tableau de bord
+                return redirect()->route('Citoyen_espace');
+            }
+        
+            // Si les informations sont incorrectes
+            return back()->withErrors(['error' => 'CIN ou mot de passe incorrect.'])->withInput();
         }
 
-        // If authentication fails, redirect back with error
-        return back()->withErrors([
-            'login' => 'المعلومات المقدمة غير صحيحة. يرجى المحاولة مرة أخرى.',
-        ])->withInput($request->only('cin'));
-    }
-
     /**
-     * Logout the user
+     * Déconnexion de l'utilisateur
      */
-    public function logout(Request $request)
+    public function logout()
     {
-        Auth::logout();
-
-        // Invalidate the session
-        $request->session()->invalidate();
-
-        // Regenerate CSRF token
-        $request->session()->regenerateToken();
-
         return redirect('/login');
     }
 
-    /**
-     * Custom method to check reference number
-     * This is a placeholder - implement your specific reference validation logic
-     */
-    protected function checkReference(User $user, string $reference): bool
+    public function showUserReclamations()
     {
-        // Example implementation:
-        // Compare the provided reference with a stored reference
-        return $user->doc_reference == $reference;
+        // Récupérer le CIN de l'utilisateur connecté
+        $cin = Auth::user()->cin;
+
+        // Récupérer les réclamations associées
+        $reclamations = Reclamations::where('cin', $cin)->get();
+
+        // Retourner la vue avec les réclamations
+        return view('reclamations', compact('reclamations'));
     }
 }

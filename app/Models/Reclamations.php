@@ -17,6 +17,7 @@ class Reclamations extends Model
         'email',
         'cin',
         'description',
+        'statut',
     ];
 
     // Pas besoin de $casts ici, sauf si vous avez un type personnalisé à caster.

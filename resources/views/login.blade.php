@@ -195,6 +195,17 @@
     </style>
 </head>
 <body>
+
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
     <div class="bg-shapes">
         <div class="shape shape1"></div>
         <div class="shape shape2"></div>
@@ -206,31 +217,20 @@
             <p>أدخل رقم بطاقة التعريف الوطنية ورقم المرجع الخاص بك</p>
         </div>
 
-        <form id="loginForm" onsubmit="return validateLogin()">
-            <div class="error-message" id="errorMessage"></div>
-
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
             <div class="input-group">
-                <input
-                    type="text"
-                    id="cinInput"
-                    placeholder="رقم بطاقة التعريف الوطنية"
-                    required
-                >
+                <input type="text" name="cin" placeholder="رقم بطاقة التعريف الوطنية" required>
                 <i class="fas fa-id-card"></i>
             </div>
-
+        
             <div class="input-group">
-                <input
-                    type="password"
-                    id="referenceInput"
-                    placeholder="رقم المرجع"
-                    required
-                >
+                <input type="password" name="password" placeholder="كلمة السر" required>
                 <i class="fas fa-lock"></i>
             </div>
-
+        
             <button type="submit" class="login-btn">تسجيل الدخول</button>
-        </form>
+        </form>        
     </div>
 
     <script>
@@ -250,7 +250,7 @@
             }
 
             if (!referenceInput.value.trim()) {
-                showError('يرجى إدخال رقم المرجع');
+                showError('يرجى إدخال كلمة السر');
                 return false;
             }
 

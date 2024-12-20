@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Citoyen extends Model
+class Citoyen extends Authenticatable
 {
     use HasFactory;
 
@@ -22,7 +22,8 @@ class Citoyen extends Model
         'address_line2',
         'postal_code',
         'city',
-        'country'
+        'country',
+        'password', // Add password field if it's part of the model
     ];
 
     // Relationships for different document requests
@@ -36,5 +37,5 @@ class Citoyen extends Model
         return $this->hasMany(BirthCertificateRequest::class, 'citoyen_id');
     }
 
-    // Add more d
+    // Add any additional relationships or methods needed
 }

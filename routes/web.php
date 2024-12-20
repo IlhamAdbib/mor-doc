@@ -131,7 +131,14 @@ Route::post('/reclamer', [ReclamerController::class, 'reclamerPost'])->name('rec
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/welcome', function() {
+    return view('Citoyen_espace');
+})->name('Citoyen_espace')->middleware('auth');
+
+Route::get('/reclamations', [AuthController::class, 'showUserReclamations'])
+    ->name('reclamations')
+    ->middleware('auth');
 
 // //pour acceder a la page de demande d'attestation de reussite
 // Route::get('/reussite',[ReussiteController::class,'reussite'])->name('reussite');
