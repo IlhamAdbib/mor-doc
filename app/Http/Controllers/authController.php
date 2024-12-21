@@ -82,7 +82,7 @@ class AuthController extends Controller
         return view('document_requests', compact('birthRequests', 'deathRequests', 'residenceRequests'));
     }
 
-    public function downloadPdf($id)
+    /*public function downloadPdf($id)
     {
         // Recherche générique de la demande parmi tous les types
         $document = BirthCertificateRequest::find($id) 
@@ -101,6 +101,43 @@ class AuthController extends Controller
 
         // Télécharger le fichier PDF
         return $pdf->download("document_{$id}.pdf");
+    }*/
+
+    public function downloadPdf($id)
+    {
+        // Recherche générique de la demande parmi tous les types
+        $document = DeathCertificateRequest::find($id);
+
+        if (!$document) {
+            abort(404, 'Document non trouvé.');
+        }
+
+        // Générer le contenu HTML pour le PDF
+        $html = view('pdf.document', compact('document'))->render();
+
+        // Générer le PDF
+        $pdf = Pdf::loadHTML($html);
+
+        // Télécharger le fichier PDF
+        return $pdf->download("document_{$id}.pdf");
     }
 
+    public function downloadBirthPdf($id)
+    {
+        // Recherche générique de la demande parmi tous les types
+        $document = BirthCertificateRequest::find($id);
+
+        if (!$document) {
+            abort(404, 'Document non trouvé.');
+        }
+
+        // Générer le contenu HTML pour le PDF
+        $html = view('pdf.document', compact('document'))->render();
+
+        // Générer le PDF
+        $pdf = Pdf::loadHTML($html);
+
+        // Télécharger le fichier PDF
+        return $pdf->download("document_{$id}.pdf");
+    }
 }
