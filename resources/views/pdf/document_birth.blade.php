@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Acte de Résidence</title>
+    <title>Acte de Naissance</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -36,7 +36,7 @@
         <p>Ministère de l'Intérieur</p>
     </div>
 
-    <h1>Acte de Résidence</h1>
+    <h1>Acte de Naissance</h1>
 
     <div>
         <div class="section">

@@ -140,4 +140,23 @@ class AuthController extends Controller
         // Télécharger le fichier PDF
         return $pdf->download("document_{$id}.pdf");
     }
+    
+    public function downloadResidencePdf($id)
+    {
+        // Recherche générique de la demande parmi tous les types
+        $document = ResidenceCertificateRequest::find($id);
+
+        if (!$document) {
+            abort(404, 'Document non trouvé.');
+        }
+
+        // Générer le contenu HTML pour le PDF
+        $html = view('pdf.document_residence', compact('document'))->render();
+
+        // Générer le PDF
+        $pdf = Pdf::loadHTML($html);
+
+        // Télécharger le fichier PDF
+        return $pdf->download("document_{$id}.pdf");
+    }
 }
