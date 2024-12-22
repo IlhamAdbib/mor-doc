@@ -132,7 +132,7 @@ class AuthController extends Controller
         }
 
         // Générer le contenu HTML pour le PDF
-        $html = view('pdf.document', compact('document'))->render();
+        $html = view('pdf.document_birth', compact('document'))->render();
 
         // Générer le PDF
         $pdf = Pdf::loadHTML($html);

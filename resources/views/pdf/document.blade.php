@@ -20,13 +20,14 @@
     </style>
 </head>
 <body>
-    <h1>Acte de Décès</h1>
     <div class="header">
         <p class="bold">Royaume du Maroc</p>
         <p>Ministère de l'Intérieur</p>
         <p>Commune : {{ $document->commune_id }}</p>
         <p>Date : {{ $document->death_date }}</p>
     </div>
+    
+    <h1>Acte de Décès</h1>
 
     <div>
         <p class="section-title">Numéro du Document : {{ $document->id }}</p>

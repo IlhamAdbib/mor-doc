@@ -142,6 +142,7 @@ Route::get('/reclamations', [AuthController::class, 'showUserReclamations'])
 
 Route::get('/document-requests', [AuthController::class, 'showDocumentRequests'])->name('document_requests');
 Route::get('/download-pdf/{id}', [AuthController::class, 'downloadPdf'])->name('download_pdf');
+Route::get('/download-birth-pdf/{id}', [AuthController::class, 'downloadBirthPdf'])->name('download_birth_pdf');
 
 // //pour acceder a la page de demande d'attestation de reussite
 // Route::get('/reussite',[ReussiteController::class,'reussite'])->name('reussite');
