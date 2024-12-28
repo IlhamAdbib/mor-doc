@@ -159,6 +159,7 @@ Route::post('/api/send-document/{id}', [AuthController::class, 'sendDocument']);
 Route::post('/send-email/{type}/{id}', [AuthController::class, 'sendEmailNotification']);
 
 Route::get('/send-birth-certificate/{id}', [AuthController::class, 'sendBirthCertificate'])->name('send_birth_certificate');
+Route::get('/send-death-certificate/{id}', [AuthController::class, 'sendDeathCertificate'])->name('send_death_certificate');
 // Route::post('/reclamations/{id}/respond', [AuthController::class, 'respondToReclamation'])->name('reclamations_agent.respond');
 // Route::post('/reclamations/{id}/respond', [AuthController::class, 'respond'])->name('reclamations.respond');
 

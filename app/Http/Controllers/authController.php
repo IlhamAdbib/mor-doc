@@ -274,7 +274,43 @@ class AuthController extends Controller
         // Supprimer le fichier PDF temporaire après l'envoi
         unlink($pdfPath);
 
-        return redirect()->route('document_requests_agent')->with('success', 'Document envoyé avec succès.');
+        return redirect()->route('document_requests_agent')->with('success', 'تم إرسال الوثيقة بنجاح.');
+    }
+
+    public function sendDeathCertificate($id)
+    {
+        // Recherche de la demande
+        $document = DeathCertificateRequest::find($id);
+
+        if (!$document) {
+            abort(404, 'Document non trouvé.');
+        }
+
+        // Générer le contenu HTML pour le PDF
+        $html = view('pdf.document', compact('document'))->render();
+
+        // Générer le PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html);
+
+        // Sauvegarder le PDF temporairement
+        $pdfPath = storage_path("app/public/document_{$id}.pdf");
+        $pdf->save($pdfPath);
+
+        // Envoyer l'email avec le PDF en pièce jointe
+        Mail::raw("السلام عليكم،\n\nنود إبلاغكم بأن طلبكم لاستخراج وثيقة شهادة الوفاة قد أصبح جاهزًا.\n\nمع أطيب التحيات،\nخدمة العملاء.", function ($message) use ($document, $pdfPath) {
+            $message->to($document->recipient_email)
+                    ->subject('إشعار بجاهزية وثيقة شهادة الوفاة')
+                    ->attach($pdfPath); // Ajouter la pièce jointe
+        });
+
+        // Mettre à jour le statut de la demande
+        $document->statut = 'Acceptée';
+        $document->save();
+
+        // Supprimer le fichier PDF temporaire après l'envoi
+        unlink($pdfPath);
+
+        return redirect()->route('document_requests_agent')->with('success', 'تم إرسال الوثيقة بنجاح.');
     }
 
 }

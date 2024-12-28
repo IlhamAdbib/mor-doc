@@ -129,6 +129,12 @@
         <div class="content">
             <h1>طلبات الوثائق</h1>
 
+            @if(session('success'))
+                <div class="alert alert-success" role="alert">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -182,7 +188,7 @@
                                 @endif
                             </td>
                             <td>
-                                <a class="btn">إرسال</a>
+                                <a class="btn" href="{{ route('send_death_certificate', ['id' => $request->id]) }}">إرسال</a>
                             </td>                                                      
                         </tr>
                     @endforeach
