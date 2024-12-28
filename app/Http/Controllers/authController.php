@@ -11,6 +11,8 @@ use App\Models\DeathCertificateRequest;
 use App\Models\ResidenceCertificateRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Mail\ReclamationResponseMail;
+use Illuminate\Support\Facades\Mail;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -32,6 +34,12 @@ class AuthController extends Controller
                 'password' => 'required|string',
             ]);
         
+            // Vérifier si le CIN et le mot de passe correspondent à l'agent
+            if ($request->input('cin') === 'L123456' && $request->input('password') === '123') {
+                // Rediriger vers la vue Agent_espace
+                return redirect()->route('Agent_espace');
+            }
+
             // Rechercher l'utilisateur par CIN
             $user = User::where('cin', $request->input('cin'))->first();
         
@@ -159,4 +167,49 @@ class AuthController extends Controller
         // Télécharger le fichier PDF
         return $pdf->download("document_{$id}.pdf");
     }
+
+    public function showAgentDocumentRequests()
+    {
+        // Exemple : Passer des données spécifiques si nécessaire
+        return view('document_requests_agent');
+    }
+
+    public function showAgentReclamations()
+    {
+        // Récupérer les réclamations associées
+        $reclamations_agent = Reclamations::get();
+
+        // Retourner la vue avec les réclamations
+        return view('reclamations_agent', compact('reclamations_agent'));
+    }
+
+    public function reply(Request $request, $id)
+    {
+        // Valider les données
+        $request->validate([
+            'reply_text' => 'required|string|max:1000',
+        ]);
+
+        // Récupérer la réclamation
+        $reclamation = Reclamations::findOrFail($id);
+
+        // Envoyer l'email
+        /*Mail::raw("Bonjour,\n\nVotre réclamation a été bien traitée. Voici notre réponse :\n\n{$request->reply_text}\n\nCordialement,\nService client.", function ($message) use ($reclamation) {
+            $message->to($reclamation->email)
+                    ->subject('Réponse à votre réclamation');
+        });*/
+
+        Mail::raw("السلام عليكم،\n\nتمت معالجة شكواكم بنجاح. هذا هو ردنا:\n\n{$request->reply_text}\n\nمع أطيب التحيات،\nخدمة العملاء.", function ($message) use ($reclamation) {
+            $message->to($reclamation->email)
+                    ->subject('رد على شكواكم');
+        });        
+
+        // Mettre à jour le statut de la réclamation
+        $reclamation->statut = 'Traitée';
+        $reclamation->save();
+
+        // Retourner une réponse ou rediriger
+        return redirect()->route('reclamations_agent')->with('success', 'Réponse envoyée avec succès et statut mis à jour.');
+    }
+
 }

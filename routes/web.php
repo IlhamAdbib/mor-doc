@@ -145,6 +145,18 @@ Route::get('/download-pdf/{id}', [AuthController::class, 'downloadPdf'])->name('
 Route::get('/download-birth-pdf/{id}', [AuthController::class, 'downloadBirthPdf'])->name('download_birth_pdf');
 Route::get('/download-residence-pdf/{id}', [AuthController::class, 'downloadResidencePdf'])->name('download_residence_pdf');
 
+Route::get('/agent-espace', function () {
+    return view('Agent_espace');
+})->name('Agent_espace');
+
+Route::get('/document_requests_agent', [AuthController::class, 'showAgentDocumentRequests'])->name('document_requests_agent');
+Route::get('/reclamations_agent', [AuthController::class, 'showAgentReclamations'])->name('reclamations_agent')->middleware('auth');
+
+Route::post('/reclamations_agent/reply/{id}', [AuthController::class, 'reply'])->name('reclamations.reply');
+
+// Route::post('/reclamations/{id}/respond', [AuthController::class, 'respondToReclamation'])->name('reclamations_agent.respond');
+// Route::post('/reclamations/{id}/respond', [AuthController::class, 'respond'])->name('reclamations.respond');
+
 // //pour acceder a la page de demande d'attestation de reussite
 // Route::get('/reussite',[ReussiteController::class,'reussite'])->name('reussite');
 // //pour l'envoi de la demande d'attestation de reussite
