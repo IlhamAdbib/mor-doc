@@ -212,7 +212,7 @@
                                 @endif
                             </td>
                             <td>
-                                <a class="btn">إرسال</a>
+                                <a class="btn" href="{{ route('send_residence_certificate', ['id' => $request->id]) }}">إرسال</a>
                             </td>                                                     
                         </tr>
                     @endforeach
