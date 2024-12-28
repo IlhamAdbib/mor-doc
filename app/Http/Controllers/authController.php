@@ -13,6 +13,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Mail\ReclamationResponseMail;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\DocumentRequestMail;
+use App\Mail\BirthCertificateMail;
+use App\Mail\DocumentSentMail;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -170,8 +173,12 @@ class AuthController extends Controller
 
     public function showAgentDocumentRequests()
     {
+        // Récupérer les demandes pour chaque type de document
+        $birthRequests = BirthCertificateRequest::get();
+        $deathRequests = DeathCertificateRequest::get();
+        $residenceRequests = ResidenceCertificateRequest::get();
         // Exemple : Passer des données spécifiques si nécessaire
-        return view('document_requests_agent');
+        return view('document_requests_agent', compact('birthRequests', 'deathRequests', 'residenceRequests'));
     }
 
     public function showAgentReclamations()
@@ -210,6 +217,64 @@ class AuthController extends Controller
 
         // Retourner une réponse ou rediriger
         return redirect()->route('reclamations_agent')->with('success', 'Réponse envoyée avec succès et statut mis à jour.');
+    }
+
+    /*
+    public function sendBirthCertificate($id)
+    {
+        // Recherche de la demande
+        $document = BirthCertificateRequest::find($id);
+
+        // Récupérer la réclamation
+        $email = $document->email;
+
+        Mail::raw("السلام عليكم،\n\nنود إبلاغكم بأن طلبكم لاستخراج وثيقة شهادة الميلاد قد أصبح جاهزًا.\n\nمع أطيب التحيات،\nخدمة العملاء.", function ($message) use ($document) {
+            $message->to($document->email)
+                    ->subject('إشعار بجاهزية وثيقة شهادة الميلاد');
+        });
+
+        $document->statut = 'Acceptée';
+
+        $document->save();
+
+        return redirect()->route('document_requests_agent');
+            
+    }*/
+
+    public function sendBirthCertificate($id)
+    {
+        // Recherche de la demande
+        $document = BirthCertificateRequest::find($id);
+
+        if (!$document) {
+            abort(404, 'Document non trouvé.');
+        }
+
+        // Générer le contenu HTML pour le PDF
+        $html = view('pdf.document_birth', compact('document'))->render();
+
+        // Générer le PDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html);
+
+        // Sauvegarder le PDF temporairement
+        $pdfPath = storage_path("app/public/document_{$id}.pdf");
+        $pdf->save($pdfPath);
+
+        // Envoyer l'email avec le PDF en pièce jointe
+        Mail::raw("السلام عليكم،\n\nنود إبلاغكم بأن طلبكم لاستخراج وثيقة شهادة الميلاد قد أصبح جاهزًا.\n\nمع أطيب التحيات،\nخدمة العملاء.", function ($message) use ($document, $pdfPath) {
+            $message->to($document->email)
+                    ->subject('إشعار بجاهزية وثيقة شهادة الميلاد')
+                    ->attach($pdfPath); // Ajouter la pièce jointe
+        });
+
+        // Mettre à jour le statut de la demande
+        $document->statut = 'Acceptée';
+        $document->save();
+
+        // Supprimer le fichier PDF temporaire après l'envoi
+        unlink($pdfPath);
+
+        return redirect()->route('document_requests_agent')->with('success', 'Document envoyé avec succès.');
     }
 
 }

@@ -150,10 +150,15 @@ Route::get('/agent-espace', function () {
 })->name('Agent_espace');
 
 Route::get('/document_requests_agent', [AuthController::class, 'showAgentDocumentRequests'])->name('document_requests_agent');
-Route::get('/reclamations_agent', [AuthController::class, 'showAgentReclamations'])->name('reclamations_agent')->middleware('auth');
+Route::get('/reclamations_agent', [AuthController::class, 'showAgentReclamations'])->name('reclamations_agent');
 
 Route::post('/reclamations_agent/reply/{id}', [AuthController::class, 'reply'])->name('reclamations.reply');
 
+Route::post('/api/send-document/{id}', [AuthController::class, 'sendDocument']);
+
+Route::post('/send-email/{type}/{id}', [AuthController::class, 'sendEmailNotification']);
+
+Route::get('/send-birth-certificate/{id}', [AuthController::class, 'sendBirthCertificate'])->name('send_birth_certificate');
 // Route::post('/reclamations/{id}/respond', [AuthController::class, 'respondToReclamation'])->name('reclamations_agent.respond');
 // Route::post('/reclamations/{id}/respond', [AuthController::class, 'respond'])->name('reclamations.respond');
 
